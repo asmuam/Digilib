@@ -1,6 +1,5 @@
 package com.polstat.digilib.ui.screen
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -27,7 +26,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -44,9 +42,7 @@ import com.polstat.digilib.R
 @Composable
 fun BookCollectionScreen(viewModel: BookCollectionViewModel = viewModel()) {
     // Observe the bookList LiveData from the ViewModel
-    val bookList by viewModel.bookList.observeAsState(emptyList())
-    var keyword by remember { mutableStateOf("") }
-    Log.i("booklist", "BookCollectionScreen:$bookList")
+    var bookList by rememberSaveable { mutableStateOf(emptyList<Book>()) }
 
     // Update the bookList when the screen is launched
     LaunchedEffect(viewModel) {
@@ -54,11 +50,15 @@ fun BookCollectionScreen(viewModel: BookCollectionViewModel = viewModel()) {
         viewModel.updateBookList(dummyData)
     }
 
+    // Observe changes in the bookList and update the local state
+    val books by viewModel.bookList.observeAsState(emptyList())
+    if (books.isNotEmpty()) {
+        bookList = books
+    }
+
     Column {
-        SearchBar(onSearch = { newKeyword ->
-            keyword = newKeyword
-            Log.i("query", "query:$keyword")
-            viewModel.filterAndUpdateBookList(keyword)
+        SearchBar(viewModel=viewModel,onSearch = { newKeyword ->
+            viewModel.filterAndUpdateBookList(newKeyword)
         })
         BookList(books = bookList)
     }
@@ -140,24 +140,16 @@ fun dummyData():List<Book>{
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBar(onSearch: (String) -> Unit) {
-    var query by remember { mutableStateOf(TextFieldValue("")) }
-    var showClearIcon by rememberSaveable{
-        mutableStateOf(false)
-    }
-    if (query.text.isEmpty()) {
-        showClearIcon = false
-    } else if (query.text.isNotEmpty()) {
-        showClearIcon = true
-    }
+fun SearchBar(viewModel: BookCollectionViewModel, onSearch: (String) -> Unit) {
+    val query by viewModel.query.observeAsState(TextFieldValue(""))
+    var showClearIcon by rememberSaveable{mutableStateOf(query.text.isNotEmpty())}
+
     TextField(
         value = query,
-        onValueChange = { newQuery ->
-            query = newQuery
-            onSearch(query.text)
-//            if (query.text.isNotEmpty()) {
-//                onSearch(query.text)
-//            }
+        onValueChange = {
+            viewModel.updateQuery(it)
+            onSearch(it.text)
+            showClearIcon = it.text.isNotEmpty()
         },
         leadingIcon = { Icon(imageVector = Icons.Default.Search,
             contentDescription = "") },
@@ -169,8 +161,9 @@ fun SearchBar(onSearch: (String) -> Unit) {
             if (showClearIcon) {
                 IconButton(
                     onClick = {
-                        query = TextFieldValue("")
+                        viewModel.updateQuery(TextFieldValue(""))
                         onSearch("")
+                        showClearIcon = false
                     }
                 ) {
                     Icon(

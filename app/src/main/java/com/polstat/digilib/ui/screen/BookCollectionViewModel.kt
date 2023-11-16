@@ -1,5 +1,6 @@
 package com.polstat.digilib.ui.screen
 
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,4 +30,13 @@ class BookCollectionViewModel : ViewModel() {
 
         _bookList.value = filteredList
     }
+
+    private val _query = MutableLiveData<TextFieldValue>(TextFieldValue(""))
+    val query: LiveData<TextFieldValue> get() = _query
+
+    // Fungsi untuk mengubah nilai query
+    fun updateQuery(newQuery: TextFieldValue) {
+        _query.value = newQuery
+    }
+
 }
