@@ -43,4 +43,15 @@ class BookCollectionViewModel : ViewModel() {
     fun updateQuery(newQuery: TextFieldValue) {
         _query.value = newQuery
     }
+
+    // Fungsi untuk mendapatkan detail buku berdasarkan ID
+    fun getBookById(bookId: Int?): Book? {
+        Log.i("ID GET", "BookDetailScreen: ${bookId}")
+        Log.i("BOOKLIST", "BookDetailScreen: ${_originalBookList.value}")
+        val validBookId = bookId ?: return null // Jika bookId null, kembalikan null
+
+        // Ubah logika ini sesuai dengan cara Anda mendapatkan detail buku dari ID
+        return _originalBookList.value?.firstOrNull { it.id == validBookId }
+    }
+
 }

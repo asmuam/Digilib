@@ -40,7 +40,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.polstat.digilib.R
 
 @Composable
-fun BookCollectionScreen(viewModel: BookCollectionViewModel = viewModel()) {
+fun BookCollectionScreen(
+    viewModel: BookCollectionViewModel = viewModel(),
+    onBookClick: (Book) -> Unit
+) {
     // Observe the bookList LiveData from the ViewModel
     val books by viewModel.bookList.observeAsState(emptyList())
     var bookList by rememberSaveable { mutableStateOf(emptyList<Book>()) }
@@ -58,7 +61,7 @@ fun BookCollectionScreen(viewModel: BookCollectionViewModel = viewModel()) {
         SearchBar(viewModel=viewModel,onSearch = { newKeyword ->
             viewModel.filterBooks(newKeyword)
         })
-        BookList(books = bookList)
+        BookList(books = bookList, onBookClick=onBookClick)
     }
 }
 
@@ -102,21 +105,23 @@ fun SearchBar(viewModel: BookCollectionViewModel, onSearch: (String) -> Unit) {
 
 
 @Composable
-fun BookList(books: List<Book>) { //untuk menampilkan card daftar buku
+fun BookList(books: List<Book>, onBookClick: (Book) -> Unit) { //untuk menampilkan card daftar buku
     LazyColumn {
         items(books) { book ->
-            BookItem(book)
-        }
+            BookItem(book = book, onBookClick = onBookClick)        }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BookItem(book: Book) { //card buku
+fun BookItem(book: Book, onBookClick: (Book) -> Unit) { //card buku
     Card(
+        onClick = {onBookClick(book)},
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .shadow(elevation = 4.dp)
+
     ) {
         Box(
             modifier = Modifier
@@ -155,12 +160,13 @@ fun BookItem(book: Book) { //card buku
     }
 }
 
-data class Book(val image: String, val title: String, val description: String)
+data class Book(val id: Int, val image: String, val title: String, val description: String)
 
-fun dummyData():List<Book>{
+fun dummyData(): List<Book> {
     val bookDummies = mutableListOf<Book>()
-    for (i in 1..30){
+    for (i in 1..30) {
         val dummy = Book(
+            id = i-1,
             image = "http://m.media-amazon.com/images/I/61ZPNhC2hSL._SY522_.jpg",
             title = "Android Programming with Kotlin for Beginners Edition $i",
             description = "Edition $i - Android is the most " +
