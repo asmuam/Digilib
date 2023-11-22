@@ -1,5 +1,6 @@
 package com.polstat.digilib.ui.screen
 
+import android.util.Log
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,11 +14,15 @@ class BookCollectionViewModel : ViewModel() {
     // Fungsi untuk memperbarui data buku
     fun updateBookList(newBookList: List<Book>) {
         _originalBookList.value = newBookList // Simpan daftar buku asli
-        _bookList.value = newBookList
+        if (_bookList.value.isNullOrEmpty()) {
+            _bookList.value = newBookList // Inisialisasi _bookList jika kosong
+        }
     }
 
     // Fungsi untuk memfilter dan memperbarui daftar buku berdasarkan kata kunci
-    fun filterAndUpdateBookList(keyword: String) {
+    fun filterBooks(keyword: String) {
+        Log.d("BookCollectionViewModel", "Filtering books with keyword: $keyword")
+
         val originalList = _originalBookList.value ?: emptyList()
 
         val filteredList = if (keyword.isNotEmpty()) {
@@ -31,12 +36,11 @@ class BookCollectionViewModel : ViewModel() {
         _bookList.value = filteredList
     }
 
-    private val _query = MutableLiveData<TextFieldValue>(TextFieldValue(""))
+    private val _query = MutableLiveData(TextFieldValue(""))
     val query: LiveData<TextFieldValue> get() = _query
 
     // Fungsi untuk mengubah nilai query
     fun updateQuery(newQuery: TextFieldValue) {
         _query.value = newQuery
     }
-
 }

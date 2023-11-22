@@ -42,6 +42,7 @@ import com.polstat.digilib.R
 @Composable
 fun BookCollectionScreen(viewModel: BookCollectionViewModel = viewModel()) {
     // Observe the bookList LiveData from the ViewModel
+    val books by viewModel.bookList.observeAsState(emptyList())
     var bookList by rememberSaveable { mutableStateOf(emptyList<Book>()) }
 
     // Update the bookList when the screen is launched
@@ -51,18 +52,54 @@ fun BookCollectionScreen(viewModel: BookCollectionViewModel = viewModel()) {
     }
 
     // Observe changes in the bookList and update the local state
-    val books by viewModel.bookList.observeAsState(emptyList())
-    if (books.isNotEmpty()) {
         bookList = books
-    }
 
     Column {
         SearchBar(viewModel=viewModel,onSearch = { newKeyword ->
-            viewModel.filterAndUpdateBookList(newKeyword)
+            viewModel.filterBooks(newKeyword)
         })
         BookList(books = bookList)
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchBar(viewModel: BookCollectionViewModel, onSearch: (String) -> Unit) {
+    val query by viewModel.query.observeAsState(TextFieldValue(""))
+    var showClearIcon by rememberSaveable{mutableStateOf(query.text.isNotEmpty())}
+
+    TextField(
+        value = query,
+        onValueChange = {
+            viewModel.updateQuery(it)
+            onSearch(it.text)
+            showClearIcon = it.text.isNotEmpty()
+        },
+        leadingIcon = { Icon(imageVector = Icons.Default.Search,
+            contentDescription = "") },
+        placeholder = { Text("Enter keyword here...") },
+        singleLine = true,
+        maxLines = 1,
+        modifier = Modifier.fillMaxWidth(),
+        trailingIcon = {
+            if (showClearIcon) {
+                IconButton(
+                    onClick = {
+                        viewModel.updateQuery(TextFieldValue(""))
+                        onSearch("")
+                        showClearIcon = false
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Clear,
+                        contentDescription = "Clear Icon"
+                    )
+                }
+            }
+        }
+    )
+}
+
 
 @Composable
 fun BookList(books: List<Book>) { //untuk menampilkan card daftar buku
@@ -136,44 +173,6 @@ fun dummyData():List<Book>{
         bookDummies.add(dummy)
     }
     return bookDummies
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SearchBar(viewModel: BookCollectionViewModel, onSearch: (String) -> Unit) {
-    val query by viewModel.query.observeAsState(TextFieldValue(""))
-    var showClearIcon by rememberSaveable{mutableStateOf(query.text.isNotEmpty())}
-
-    TextField(
-        value = query,
-        onValueChange = {
-            viewModel.updateQuery(it)
-            onSearch(it.text)
-            showClearIcon = it.text.isNotEmpty()
-        },
-        leadingIcon = { Icon(imageVector = Icons.Default.Search,
-            contentDescription = "") },
-        placeholder = { Text("Enter keyword here...") },
-        singleLine = true,
-        maxLines = 1,
-        modifier = Modifier.fillMaxWidth(),
-        trailingIcon = {
-            if (showClearIcon) {
-                IconButton(
-                    onClick = {
-                        viewModel.updateQuery(TextFieldValue(""))
-                        onSearch("")
-                        showClearIcon = false
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Clear,
-                        contentDescription = "Clear Icon"
-                    )
-                }
-            }
-        }
-    )
 }
 
 
