@@ -125,7 +125,7 @@ fun BookItem(book: Book, onBookClick: (Book) -> Unit) { //card buku
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .clip(MaterialTheme.shapes.medium) // Clip the Box with a shape
         ) {
             Image(
