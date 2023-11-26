@@ -4,8 +4,8 @@ import LoginScreen
 import RegisterScreen
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ShareCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -17,13 +17,16 @@ import androidx.navigation.navArgument
 import com.polstat.digilib.ui.screen.BookCollectionScreen
 import com.polstat.digilib.ui.screen.BookCollectionViewModel
 import com.polstat.digilib.ui.screen.BookDetailScreen
+import com.polstat.digilib.ui.screen.BookEntryScreen
 import com.polstat.digilib.ui.screen.WelcomeScreen
-import com.polstat.digilib.ui.screen.dummyData
 
 @Composable
 fun App() {
     val navController = rememberNavController()
     val activity = (LocalContext.current as Activity)
+    // Create the BookCollectionViewModel at the App level
+    val bookCollectionViewModel: BookCollectionViewModel = viewModel()
+
     NavHost(
         navController = navController,
         startDestination = "welcome_screen"
@@ -32,28 +35,26 @@ fun App() {
             WelcomeScreen(navController)
         }
         composable("book_collection_screen") {
+            val modifier: Modifier = Modifier
             BookCollectionScreen(
+                viewModel = bookCollectionViewModel,
                 onBookClick = {
-                    Log.i("ID BOOK", "BookDetailScreen: ${it.id}")
-                    Log.i("ID BOOK", "BookDetailScreen: ${it}")
                     navController.navigate("books/${it.id}")
-                })
+                },
+                modifier,
+                navController
+            )
         }
         composable(
             "books/{bookid}",
             arguments = listOf(navArgument("bookid") {
                 type = NavType.IntType
             })
-        ) {
-            val id = it.arguments?.getInt("bookid")
-            Log.i("ID", "BookDetailScreen: ${id}")
-
-            val viewModel: BookCollectionViewModel = viewModel()
-            val dummyData = dummyData()
-            viewModel.updateBookList(dummyData)
+        ) { navBackStackEntry ->
+            val id = navBackStackEntry.arguments?.getInt("bookid")
+            // Use the existing instance of BookCollectionViewModel
             // Mendapatkan detail buku berdasarkan ID
-            val book = viewModel.getBookById(id)
-            Log.i("BOOK", "BookDetailScreen: ${book}")
+            val book = bookCollectionViewModel.getBookById(id)
 
             // Memastikan book tidak null sebelum menampilkan detail buku
             if (book != null) {
@@ -76,13 +77,15 @@ fun App() {
         composable("register_screen") {
             RegisterScreen(navController)
         }
+        composable("book_entry_screen") {
+            BookEntryScreen(
+                onBackClick = { navController.navigateUp() })
+        }
     }
 }
-
 fun createShareIntent(activity: Activity, bookTitle: String) {
-    val shareText = bookTitle
     val shareIntent = ShareCompat.IntentBuilder(activity)
-        .setText(shareText)
+        .setText(bookTitle)
         .setType("text/plain")
         .createChooserIntent()
         .addFlags(

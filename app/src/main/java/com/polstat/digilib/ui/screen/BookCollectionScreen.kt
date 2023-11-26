@@ -12,15 +12,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,19 +36,86 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.polstat.digilib.R
 
+
+@Composable
+@Preview
+fun BookCollectionScreenPreview() {
+    val bookCollectionViewModel: BookCollectionViewModel = viewModel()
+    val dummy = dummyData()
+    val navController = rememberNavController()
+    bookCollectionViewModel.updateBookList(dummy)
+    BookCollectionScreen(
+        viewModel = bookCollectionViewModel, // Sesuaikan dengan inisialisasi ViewModel
+        onBookClick = { /* handle klik buku */ },
+        Modifier,
+        navController
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookCollectionScreen(
     viewModel: BookCollectionViewModel = viewModel(),
-    onBookClick: (Book) -> Unit
+    onBookClick: (Book) -> Unit,
+    modifier: Modifier,
+    navController: NavController
 ) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text("Book Collection") // Ganti dengan judul yang sesuai
+                },
+                navigationIcon = {
+                    // Tambahkan ikon navigasi jika diperlukan
+                }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    navController.navigate("book_entry_screen")
+                },
+                shape = MaterialTheme.shapes.medium,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Icon",
+                    tint = Color.White // Ganti dengan warna yang diinginkan
+                )
+            }
+        },
+        content = { innerPadding ->
+            BookCollectionScreenBody(
+                viewModel,
+                onBookClick,
+                modifier = Modifier
+                        .padding(innerPadding)
+            )
+        }
+    )
+}
+@Composable
+fun BookCollectionScreenBody(
+    viewModel: BookCollectionViewModel = viewModel(),
+    onBookClick: (Book) -> Unit,
+    modifier: Modifier
+){
     // Observe the bookList LiveData from the ViewModel
     val books by viewModel.bookList.observeAsState(emptyList())
     var bookList by rememberSaveable { mutableStateOf(emptyList<Book>()) }
@@ -55,7 +127,7 @@ fun BookCollectionScreen(
     }
 
     // Observe changes in the bookList and update the local state
-        bookList = books
+    bookList = books
 
     Column {
         SearchBar(viewModel=viewModel,onSearch = { newKeyword ->
@@ -64,7 +136,6 @@ fun BookCollectionScreen(
         BookList(books = bookList, onBookClick=onBookClick)
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(viewModel: BookCollectionViewModel, onSearch: (String) -> Unit) {
