@@ -26,7 +26,8 @@ fun BookDetailScreen(
     book: Book,
     onBackClick: () -> Unit,
     onShareClick: (String) -> Unit,
-) {
+    onEditClick: (Int) -> Unit,
+    ) {
 
     LazyColumn(
         modifier = Modifier

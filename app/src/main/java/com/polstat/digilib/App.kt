@@ -17,6 +17,7 @@ import androidx.navigation.navArgument
 import com.polstat.digilib.ui.screen.BookCollectionScreen
 import com.polstat.digilib.ui.screen.BookCollectionViewModel
 import com.polstat.digilib.ui.screen.BookDetailScreen
+import com.polstat.digilib.ui.screen.BookEditScreen
 import com.polstat.digilib.ui.screen.BookEntryScreen
 import com.polstat.digilib.ui.screen.WelcomeScreen
 
@@ -63,7 +64,10 @@ fun App() {
                     onBackClick = { navController.navigateUp() },
                     onShareClick = {
                         createShareIntent(activity, it)
-                    }
+                    },
+                    onEditClick = {
+                        navController.navigate("edit/${id}")
+                    },
                 )
             } else {
                 // Handle kasus ketika buku dengan ID tertentu tidak ditemukan
@@ -80,6 +84,18 @@ fun App() {
         composable("book_entry_screen") {
             BookEntryScreen(
                 onBackClick = { navController.navigateUp() })
+        }
+        composable("edit/{bookid}",
+            arguments = listOf(navArgument("bookid") {
+                type = NavType.IntType
+            })
+        ) {
+            val book = bookCollectionViewModel.getBookById(id)
+            if (book != null) {
+                BookEditScreen(
+                    book,
+                    onBackClick = { navController.navigateUp() })
+            }
         }
     }
 }

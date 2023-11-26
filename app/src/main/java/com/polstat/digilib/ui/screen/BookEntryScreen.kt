@@ -23,8 +23,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.polstat.digilib.R
-import java.util.Currency
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,29 +94,15 @@ fun ItemInputForm(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
     ) {
         OutlinedTextField(
-            value = itemDetails.image,
-            onValueChange = { onValueChange(itemDetails.copy(image = it)) },
-            label = { Text("image required") },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            ),
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true
-        )
-        OutlinedTextField(
             value = itemDetails.title,
             onValueChange = { onValueChange(itemDetails.copy(title = it)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            label = { Text("title required") },
+            label = { Text("title*") },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
             ),
-            leadingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true
@@ -127,7 +111,7 @@ fun ItemInputForm(
             value = itemDetails.description,
             onValueChange = { onValueChange(itemDetails.copy(description = it)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            label = { Text("description required") },
+            label = { Text("description*") },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -137,6 +121,19 @@ fun ItemInputForm(
             enabled = enabled,
             singleLine = true
         )
+//        OutlinedTextField( //image still need fixing
+//            value = itemDetails.image,
+//            onValueChange = { onValueChange(itemDetails.copy(image = it)) },
+//            label = { Text("image*") },
+//            colors = OutlinedTextFieldDefaults.colors(
+//                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+//                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+//                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+//            ),
+//            modifier = Modifier.fillMaxWidth(),
+//            enabled = enabled,
+//            singleLine = true
+//        )
         if (enabled) {
             Text(
                 text = stringResource(R.string.required_fields),
