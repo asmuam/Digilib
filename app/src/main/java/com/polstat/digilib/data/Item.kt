@@ -28,5 +28,6 @@ data class Item(
     val id: Int = 0,
     val title: String,
     val description: String,
-    val image: String
+    val image: String,
+    val quantity: Int
 )

@@ -35,4 +35,8 @@
     <string name="sell">Sell</string>
     <string name="yes">Yes</string>
     <string name="required_fields">*required fields</string>
+    <string name="description">Deskripsi</string>
+    <string name="description_req">Deskripsi*</string>
+    <string name="image_req">Image*</string>
+    <string name="no_item_found_description">Maaf, Buku Yang Anda Cari Belum Tersedia!</string>
 </resources>

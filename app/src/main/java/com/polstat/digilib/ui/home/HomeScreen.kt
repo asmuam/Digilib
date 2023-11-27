@@ -20,10 +20,8 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -68,13 +66,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.polstat.digilib.InventoryTopAppBar
-import com.polstat.digilib.data.Item
-import com.polstat.digilib.ui.AppViewModelProvider
-import com.polstat.digilib.ui.item.formatedPrice
-import com.polstat.digilib.ui.navigation.NavigationDestination
-import com.polstat.digilib.ui.theme.InventoryTheme
 import com.polstat.digilib.R
 import com.polstat.digilib.data.AppDataContainer
+import com.polstat.digilib.data.Item
+import com.polstat.digilib.ui.AppViewModelProvider
+import com.polstat.digilib.ui.navigation.NavigationDestination
+import com.polstat.digilib.ui.theme.InventoryTheme
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
@@ -140,16 +137,27 @@ private fun HomeBody(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        if (itemList.isEmpty()) {
+        SearchBar(viewModel=viewModel,onSearch = { newKeyword ->
+            viewModel.updateQuery(TextFieldValue(newKeyword))
+        })
+        // Check if there is an active search query
+        val queryState = viewModel.query.collectAsState()
+        val isQueryActive = queryState.value.text.isNotEmpty()
+
+        if (itemList.isEmpty() && isQueryActive) {
+
+            Text(
+                text = stringResource(R.string.no_item_found_description),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge
+            )
+        } else if (itemList.isEmpty()) {
             Text(
                 text = stringResource(R.string.no_item_description),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge
             )
         } else {
-            SearchBar(viewModel=viewModel,onSearch = { newKeyword ->
-                viewModel.filterBooks(newKeyword)
-            })
             InventoryList(
                 itemList = itemList,
                 onItemClick = { onItemClick(it.id) },
@@ -159,6 +167,39 @@ private fun HomeBody(
     }
 }
 
+@Composable
+fun SearchBar(viewModel: HomeViewModel, onSearch: (String) -> Unit) {
+    val query by viewModel.query.collectAsState()
+    var showClearIcon by rememberSaveable { mutableStateOf(query.text.isNotEmpty()) }
+    TextField(
+        value = query.text,
+        onValueChange = {
+            onSearch(it)
+            showClearIcon = it.isNotEmpty()
+        },
+        leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "") },
+        placeholder = { Text("Enter keyword here...") },
+        singleLine = true,
+        maxLines = 1,
+        modifier = Modifier.fillMaxWidth(),
+        trailingIcon = {
+            if (showClearIcon) {
+                IconButton(
+                    onClick = {
+                        viewModel.updateQuery(TextFieldValue(""))
+                        onSearch("")
+                        showClearIcon = false
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Clear,
+                        contentDescription = "Clear Icon"
+                    )
+                }
+            }
+        }
+    )
+}
 @Composable
 private fun InventoryList(
     itemList: List<Item>, onItemClick: (Item) -> Unit, modifier: Modifier = Modifier
@@ -217,42 +258,6 @@ private fun InventoryItem(
         }
     }
 
-@Composable
-fun SearchBar(viewModel: HomeViewModel, onSearch: (String) -> Unit) {
-    val query by viewModel.query.collectAsState()
-    var showClearIcon by rememberSaveable { mutableStateOf(query.text.isNotEmpty()) }
-
-    TextField(
-        value = query,
-        onValueChange = {
-            viewModel.updateQuery(it)
-            onSearch(it.text)
-            showClearIcon = it.text.isNotEmpty()
-        },
-        leadingIcon = { Icon(imageVector = Icons.Default.Search,
-            contentDescription = "") },
-        placeholder = { Text("Enter keyword here...") },
-        singleLine = true,
-        maxLines = 1,
-        modifier = Modifier.fillMaxWidth(),
-        trailingIcon = {
-            if (showClearIcon) {
-                IconButton(
-                    onClick = {
-                        viewModel.updateQuery(TextFieldValue(""))
-                        onSearch("")
-                        showClearIcon = false
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Clear,
-                        contentDescription = "Clear Icon"
-                    )
-                }
-            }
-        }
-    )
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -260,7 +265,7 @@ fun HomeBodyPreview() {
     InventoryTheme {
         val viewModel = HomeViewModel(AppDataContainer(LocalContext.current).itemsRepository)
         HomeBody(listOf(
-            Item(1, "Game", "100.0", "20"), Item(2, "Pen", "200.0", "30"), Item(3, "TV", "300.0", "50")
+            Item(1, "Game", "100.0", "20",4), Item(2, "Pen", "200.0", "30", quantity = 2), Item(3, "TV", "300.0", "50", quantity = 7)
         ), onItemClick = {}, viewModel = viewModel
         )
     }

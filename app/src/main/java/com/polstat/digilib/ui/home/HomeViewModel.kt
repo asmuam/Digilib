@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 /**
@@ -38,19 +37,16 @@ class HomeViewModel(itemsRepository: ItemsRepository) : ViewModel() {
      * Holds home ui state. The list of items are retrieved from [ItemsRepository] and mapped to
      * [HomeUiState]
      */
-//    val homeUiState: StateFlow<HomeUiState> =
-//        itemsRepository.getAllItemsStream().map { HomeUiState(it) }
-//            .stateIn(
-//                scope = viewModelScope,
-//                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-//                initialValue = HomeUiState()
-//            )
-
     private val _query = MutableStateFlow(TextFieldValue(""))
-    val query: StateFlow<TextFieldValue> = _query.asStateFlow()
+    val query: StateFlow<TextFieldValue> get() = _query.asStateFlow()
+
+    // Fungsi untuk mengubah nilai query
+    fun updateQuery(newQuery: TextFieldValue) {
+        _query.value = newQuery
+    }
 
     val homeUiState: StateFlow<HomeUiState> =
-        itemsRepository.getAllItemsStream().combine(_query) { items, query ->
+        itemsRepository.getAllItemsStream().combine(query) { items, query ->
             HomeUiState(items.filter { it.title.contains(query.text, ignoreCase = true) })
         }.stateIn(
             scope = viewModelScope,
@@ -61,16 +57,7 @@ class HomeViewModel(itemsRepository: ItemsRepository) : ViewModel() {
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }
-
-    fun updateQuery(value: TextFieldValue) {
-        _query.value = value
-    }
-
-    fun filterBooks(keyword: String) {
-        _query.value = TextFieldValue(keyword)
-    }
 }
-
 /**
  * Ui State for HomeScreen
  */
