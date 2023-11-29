@@ -199,7 +199,7 @@ fun BookDetails(
                 )
             )
             BookDetailsRow(
-                labelResID = R.string.price,
+                labelResID = R.string.image,
                 bookDetail = book.image,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(
@@ -259,7 +259,7 @@ private fun DeleteConfirmationDialog(
 fun BookDetailsScreenPreview() {
     BookTheme {
         BookDetailsBody(BookDetailsUiState(
-            outOfStock = true, bookDetails = BookDetails(1, "Pen", "$100", "10")
+            outOfStock = true, bookDetails = BookDetails(1, "www.exampleimage.com", "$100", "qwert")
         ), onSellBook = {}, onDelete = {})
     }
 }

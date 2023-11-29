@@ -44,8 +44,6 @@ import com.polstat.digilib.ui.AppViewModelProvider
 import com.polstat.digilib.ui.navigation.NavigationDestination
 import com.polstat.digilib.ui.theme.BookTheme
 import kotlinx.coroutines.launch
-import java.util.Currency
-import java.util.Locale
 
 object BookEntryDestination : NavigationDestination {
     override val route = "book_entry"
@@ -152,7 +150,6 @@ fun BookInputForm(
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
             ),
-            leadingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true

@@ -28,9 +28,9 @@
     <string name="book_price_req">Book Price*</string>
     <string name="no">No</string>
     <string name="price">Price</string>
-    <string name="quantity_in_stock">Quantity in stock</string>
+    <string name="quantity_in_stock">Quantity in library</string>
     <string name="in_stock">%d in stock</string>
-    <string name="quantity_req">Quantity in Stock*</string>
+    <string name="quantity_req">Quantity in Library*</string>
     <string name="save_action">Save</string>
     <string name="sell">Sell</string>
     <string name="yes">Yes</string>
@@ -39,4 +39,5 @@
     <string name="description_req">Deskripsi*</string>
     <string name="image_req">Image*</string>
     <string name="no_book_found_description">Maaf, Buku Yang Anda Cari Belum Tersedia!</string>
+    <string name="image">Image Url</string>
 </resources>
