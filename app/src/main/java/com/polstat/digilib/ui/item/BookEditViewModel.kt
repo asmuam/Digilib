@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.polstat.digilib.ui.item
+package com.polstat.digilib.ui.book
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,55 +22,55 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.polstat.digilib.data.ItemsRepository
+import com.polstat.digilib.data.BooksRepository
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel to retrieve and update an item from the [ItemsRepository]'s data source.
+ * ViewModel to retrieve and update an book from the [BooksRepository]'s data source.
  */
-class ItemEditViewModel(
+class BookEditViewModel(
     savedStateHandle: SavedStateHandle,
-    private val itemsRepository: ItemsRepository
+    private val booksRepository: BooksRepository
 ) : ViewModel() {
 
     /**
-     * Holds current item ui state
+     * Holds current book ui state
      */
-    var itemUiState by mutableStateOf(ItemUiState())
+    var bookUiState by mutableStateOf(BookUiState())
         private set
 
-    private val itemId: Int = checkNotNull(savedStateHandle[ItemEditDestination.itemIdArg])
+    private val bookId: Int = checkNotNull(savedStateHandle[BookEditDestination.bookIdArg])
 
     init {
         viewModelScope.launch {
-            itemUiState = itemsRepository.getItemStream(itemId)
+            bookUiState = booksRepository.getBookStream(bookId)
                 .filterNotNull()
                 .first()
-                .toItemUiState(true)
+                .toBookUiState(true)
         }
     }
 
     /**
-     * Update the item in the [ItemsRepository]'s data source
+     * Update the book in the [BooksRepository]'s data source
      */
-    suspend fun updateItem() {
-        if (validateInput(itemUiState.itemDetails)) {
-            itemsRepository.updateItem(itemUiState.itemDetails.toItem())
+    suspend fun updateBook() {
+        if (validateInput(bookUiState.bookDetails)) {
+            booksRepository.updateBook(bookUiState.bookDetails.toBook())
         }
     }
 
     /**
-     * Updates the [itemUiState] with the value provided in the argument. This method also triggers
+     * Updates the [bookUiState] with the value provided in the argument. This method also triggers
      * a validation for input values.
      */
-    fun updateUiState(itemDetails: ItemDetails) {
-        itemUiState =
-            ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails))
+    fun updateUiState(bookDetails: BookDetails) {
+        bookUiState =
+            BookUiState(bookDetails = bookDetails, isEntryValid = validateInput(bookDetails))
     }
 
-    private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
+    private fun validateInput(uiState: BookDetails = bookUiState.bookDetails): Boolean {
         return with(uiState) {
             title.isNotBlank() && description.isNotBlank() && quantity.isNotBlank()
         }

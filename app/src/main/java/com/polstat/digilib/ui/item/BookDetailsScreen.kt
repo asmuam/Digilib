@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.polstat.digilib.ui.item
+package com.polstat.digilib.ui.book
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
@@ -52,62 +52,62 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.polstat.digilib.InventoryTopAppBar
+import com.polstat.digilib.BookTopAppBar
 import com.polstat.digilib.R
-import com.polstat.digilib.data.Item
+import com.polstat.digilib.data.Book
 import com.polstat.digilib.ui.AppViewModelProvider
 import com.polstat.digilib.ui.navigation.NavigationDestination
-import com.polstat.digilib.ui.theme.InventoryTheme
+import com.polstat.digilib.ui.theme.BookTheme
 import kotlinx.coroutines.launch
 
-object ItemDetailsDestination : NavigationDestination {
-    override val route = "item_details"
-    override val titleRes = R.string.item_detail_title
-    const val itemIdArg = "itemId"
-    val routeWithArgs = "$route/{$itemIdArg}"
+object BookDetailsDestination : NavigationDestination {
+    override val route = "book_details"
+    override val titleRes = R.string.book_detail_title
+    const val bookIdArg = "bookId"
+    val routeWithArgs = "$route/{$bookIdArg}"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemDetailsScreen(
-    navigateToEditItem: (Int) -> Unit,
+fun BookDetailsScreen(
+    navigateToEditBook: (Int) -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ItemDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: BookDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState = viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
         topBar = {
-            InventoryTopAppBar(
-                title = stringResource(ItemDetailsDestination.titleRes),
+            BookTopAppBar(
+                title = stringResource(BookDetailsDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = navigateBack
             )
         }, floatingActionButton = {
             FloatingActionButton(
-                onClick = { navigateToEditItem(uiState.value.itemDetails.id) },
+                onClick = { navigateToEditBook(uiState.value.bookDetails.id) },
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
 
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
-                    contentDescription = stringResource(R.string.edit_item_title),
+                    contentDescription = stringResource(R.string.edit_book_title),
                 )
             }
         }, modifier = modifier
     ) { innerPadding ->
-        ItemDetailsBody(
-            itemDetailsUiState = uiState.value,
-            onSellItem = { viewModel.reduceQuantityByOne() },
+        BookDetailsBody(
+            bookDetailsUiState = uiState.value,
+            onSellBook = { viewModel.reduceQuantityByOne() },
             onDelete = {
                 // Note: If the user rotates the screen very fast, the operation may get cancelled
-                // and the item may not be deleted from the Database. This is because when config
+                // and the book may not be deleted from the Database. This is because when config
                 // change occurs, the Activity will be recreated and the rememberCoroutineScope will
                 // be cancelled - since the scope is bound to composition.
                 coroutineScope.launch {
-                    viewModel.deleteItem()
+                    viewModel.deleteBook()
                     navigateBack()
                 }
             },
@@ -119,9 +119,9 @@ fun ItemDetailsScreen(
 }
 
 @Composable
-private fun ItemDetailsBody(
-    itemDetailsUiState: ItemDetailsUiState,
-    onSellItem: () -> Unit,
+private fun BookDetailsBody(
+    bookDetailsUiState: BookDetailsUiState,
+    onSellBook: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -130,14 +130,14 @@ private fun ItemDetailsBody(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
     ) {
         var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
-        ItemDetails(
-            item = itemDetailsUiState.itemDetails.toItem(), modifier = Modifier.fillMaxWidth()
+        BookDetails(
+            book = bookDetailsUiState.bookDetails.toBook(), modifier = Modifier.fillMaxWidth()
         )
         Button(
-            onClick = onSellItem,
+            onClick = onSellBook,
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.small,
-            enabled = !itemDetailsUiState.outOfStock
+            enabled = !bookDetailsUiState.outOfStock
         ) {
             Text(stringResource(R.string.sell))
         }
@@ -163,8 +163,8 @@ private fun ItemDetailsBody(
 
 
 @Composable
-fun ItemDetails(
-    item: Item, modifier: Modifier = Modifier
+fun BookDetails(
+    book: Book, modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier, colors = CardDefaults.cardColors(
@@ -178,9 +178,9 @@ fun ItemDetails(
                 .padding(dimensionResource(id = R.dimen.padding_medium)),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
         ) {
-            ItemDetailsRow(
-                labelResID = R.string.item,
-                itemDetail = item.title,
+            BookDetailsRow(
+                labelResID = R.string.book,
+                bookDetail = book.title,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(
                         id = R.dimen
@@ -188,9 +188,9 @@ fun ItemDetails(
                     )
                 )
             )
-            ItemDetailsRow(
+            BookDetailsRow(
                 labelResID = R.string.quantity_in_stock,
-                itemDetail = item.quantity.toString(),
+                bookDetail = book.quantity.toString(),
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(
                         id = R.dimen
@@ -198,9 +198,9 @@ fun ItemDetails(
                     )
                 )
             )
-            ItemDetailsRow(
+            BookDetailsRow(
                 labelResID = R.string.price,
-                itemDetail = item.image,
+                bookDetail = book.image,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(
                         id = R.dimen
@@ -208,9 +208,9 @@ fun ItemDetails(
                     )
                 )
             )
-            ItemDetailsRow(
+            BookDetailsRow(
                 labelResID = R.string.description,
-                itemDetail = item.description,
+                bookDetail = book.description,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(
                         id = R.dimen
@@ -224,13 +224,13 @@ fun ItemDetails(
 }
 
 @Composable
-private fun ItemDetailsRow(
-    @StringRes labelResID: Int, itemDetail: String, modifier: Modifier = Modifier
+private fun BookDetailsRow(
+    @StringRes labelResID: Int, bookDetail: String, modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
         Text(text = stringResource(labelResID))
         Spacer(modifier = Modifier.weight(1f))
-        Text(text = itemDetail, fontWeight = FontWeight.Bold)
+        Text(text = bookDetail, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -256,10 +256,10 @@ private fun DeleteConfirmationDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun ItemDetailsScreenPreview() {
-    InventoryTheme {
-        ItemDetailsBody(ItemDetailsUiState(
-            outOfStock = true, itemDetails = ItemDetails(1, "Pen", "$100", "10")
-        ), onSellItem = {}, onDelete = {})
+fun BookDetailsScreenPreview() {
+    BookTheme {
+        BookDetailsBody(BookDetailsUiState(
+            outOfStock = true, bookDetails = BookDetails(1, "Pen", "$100", "10")
+        ), onSellBook = {}, onDelete = {})
     }
 }

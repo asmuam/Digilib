@@ -19,31 +19,31 @@ package com.polstat.digilib.data
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Repository that provides insert, update, delete, and retrieve of [Item] from a given data source.
+ * Repository that provides insert, update, delete, and retrieve of [Book] from a given data source.
  */
-interface ItemsRepository {
+interface BooksRepository {
     /**
-     * Retrieve all the items from the the given data source.
+     * Retrieve all the books from the the given data source.
      */
-    fun getAllItemsStream(): Flow<List<Item>>
+    fun getAllBooksStream(): Flow<List<Book>>
 
     /**
-     * Retrieve an item from the given data source that matches with the [id].
+     * Retrieve an book from the given data source that matches with the [id].
      */
-    fun getItemStream(id: Int): Flow<Item?>
+    fun getBookStream(id: Int): Flow<Book?>
 
     /**
-     * Insert item in the data source
+     * Insert book in the data source
      */
-    suspend fun insertItem(item: Item)
+    suspend fun insertBook(book: Book)
 
     /**
-     * Delete item from the data source
+     * Delete book from the data source
      */
-    suspend fun deleteItem(item: Item)
+    suspend fun deleteBook(book: Book)
 
     /**
-     * Update item in the data source
+     * Update book in the data source
      */
-    suspend fun updateItem(item: Item)
+    suspend fun updateBook(book: Book)
 }

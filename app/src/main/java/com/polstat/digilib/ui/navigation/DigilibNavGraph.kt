@@ -29,12 +29,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.polstat.digilib.ui.home.HomeDestination
 import com.polstat.digilib.ui.home.HomeScreen
-import com.polstat.digilib.ui.item.ItemDetailsDestination
-import com.polstat.digilib.ui.item.ItemDetailsScreen
-import com.polstat.digilib.ui.item.ItemEditDestination
-import com.polstat.digilib.ui.item.ItemEditScreen
-import com.polstat.digilib.ui.item.ItemEntryDestination
-import com.polstat.digilib.ui.item.ItemEntryScreen
+import com.polstat.digilib.ui.book.BookDetailsDestination
+import com.polstat.digilib.ui.book.BookDetailsScreen
+import com.polstat.digilib.ui.book.BookEditDestination
+import com.polstat.digilib.ui.book.BookEditScreen
+import com.polstat.digilib.ui.book.BookEntryDestination
+import com.polstat.digilib.ui.book.BookEntryScreen
 import com.polstat.digilib.ui.screen.WelcomeScreen
 import com.polstat.digilib.ui.screen.WelcomeScreenDestination
 
@@ -42,7 +42,7 @@ import com.polstat.digilib.ui.screen.WelcomeScreenDestination
  * Provides Navigation graph for the application.
  */
 @Composable
-fun InventoryNavHost(
+fun BookNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
@@ -62,36 +62,36 @@ fun InventoryNavHost(
         }
         composable(route = HomeDestination.route) {
             HomeScreen(
-                navigateToItemEntry = { navController.navigate(ItemEntryDestination.route) },
-                navigateToItemUpdate = {
-                    navController.navigate("${ItemDetailsDestination.route}/${it}")
+                navigateToBookEntry = { navController.navigate(BookEntryDestination.route) },
+                navigateToBookUpdate = {
+                    navController.navigate("${BookDetailsDestination.route}/${it}")
                 }
             )
         }
-        composable(route = ItemEntryDestination.route) {
-            ItemEntryScreen(
+        composable(route = BookEntryDestination.route) {
+            BookEntryScreen(
                 navigateBack = { navController.popBackStack() },
                 onNavigateUp = { navController.navigateUp() }
             )
         }
         composable(
-            route = ItemDetailsDestination.routeWithArgs,
-            arguments = listOf(navArgument(ItemDetailsDestination.itemIdArg) {
+            route = BookDetailsDestination.routeWithArgs,
+            arguments = listOf(navArgument(BookDetailsDestination.bookIdArg) {
                 type = NavType.IntType
             })
         ) {
-            ItemDetailsScreen(
-                navigateToEditItem = { navController.navigate("${ItemEditDestination.route}/$it") },
+            BookDetailsScreen(
+                navigateToEditBook = { navController.navigate("${BookEditDestination.route}/$it") },
                 navigateBack = { navController.navigateUp() }
             )
         }
         composable(
-            route = ItemEditDestination.routeWithArgs,
-            arguments = listOf(navArgument(ItemEditDestination.itemIdArg) {
+            route = BookEditDestination.routeWithArgs,
+            arguments = listOf(navArgument(BookEditDestination.bookIdArg) {
                 type = NavType.IntType
             })
         ) {
-            ItemEditScreen(
+            BookEditScreen(
                 navigateBack = { navController.popBackStack() },
                 onNavigateUp = { navController.navigateUp() }
             )

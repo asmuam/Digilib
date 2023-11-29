@@ -19,8 +19,8 @@ package com.polstat.digilib.ui.home
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.polstat.digilib.data.Item
-import com.polstat.digilib.data.ItemsRepository
+import com.polstat.digilib.data.Book
+import com.polstat.digilib.data.BooksRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -29,12 +29,12 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
 /**
- * ViewModel to retrieve all items in the Room database.
+ * ViewModel to retrieve all books in the Room database.
  */
-class HomeViewModel(itemsRepository: ItemsRepository) : ViewModel() {
+class HomeViewModel(booksRepository: BooksRepository) : ViewModel() {
 
     /**
-     * Holds home ui state. The list of items are retrieved from [ItemsRepository] and mapped to
+     * Holds home ui state. The list of books are retrieved from [BooksRepository] and mapped to
      * [HomeUiState]
      */
     private val _query = MutableStateFlow(TextFieldValue(""))
@@ -46,8 +46,8 @@ class HomeViewModel(itemsRepository: ItemsRepository) : ViewModel() {
     }
 
     val homeUiState: StateFlow<HomeUiState> =
-        itemsRepository.getAllItemsStream().combine(query) { items, query ->
-            HomeUiState(items.filter { it.title.contains(query.text, ignoreCase = true) })
+        booksRepository.getAllBooksStream().combine(query) { books, query ->
+            HomeUiState(books.filter { it.title.contains(query.text, ignoreCase = true) })
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
@@ -61,4 +61,4 @@ class HomeViewModel(itemsRepository: ItemsRepository) : ViewModel() {
 /**
  * Ui State for HomeScreen
  */
-data class HomeUiState(val itemList: List<Item> = listOf())
+data class HomeUiState(val bookList: List<Book> = listOf())

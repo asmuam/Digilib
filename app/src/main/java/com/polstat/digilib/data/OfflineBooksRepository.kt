@@ -18,14 +18,14 @@ package com.polstat.digilib.data
 
 import kotlinx.coroutines.flow.Flow
 
-class OfflineItemsRepository(private val itemDao: ItemDao) : ItemsRepository {
-    override fun getAllItemsStream(): Flow<List<Item>> = itemDao.getAllItems()
+class OfflineBooksRepository(private val bookDao: BookDao) : BooksRepository {
+    override fun getAllBooksStream(): Flow<List<Book>> = bookDao.getAllBooks()
 
-    override fun getItemStream(id: Int): Flow<Item?> = itemDao.getItem(id)
+    override fun getBookStream(id: Int): Flow<Book?> = bookDao.getBook(id)
 
-    override suspend fun insertItem(item: Item) = itemDao.insert(item)
+    override suspend fun insertBook(book: Book) = bookDao.insert(book)
 
-    override suspend fun deleteItem(item: Item) = itemDao.delete(item)
+    override suspend fun deleteBook(book: Book) = bookDao.delete(book)
 
-    override suspend fun updateItem(item: Item) = itemDao.update(item)
+    override suspend fun updateBook(book: Book) = bookDao.update(book)
 }

@@ -19,13 +19,13 @@
     <string name="back_button">Back</string>
     <string name="delete">Delete</string>
     <string name="delete_question">Are you sure you want to delete?</string>
-    <string name="no_item_description">Oops!\nNo books in the digilib.\nTap + to add.</string>
-    <string name="edit_item_title">Edit Book</string>
-    <string name="item">Book</string>
-    <string name="item_detail_title">Book Details</string>
-    <string name="item_entry_title">Add Book</string>
-    <string name="item_name_req">Item Name*</string>
-    <string name="item_price_req">Item Price*</string>
+    <string name="no_book_description">Oops!\nNo books in the digilib.\nTap + to add.</string>
+    <string name="edit_book_title">Edit Book</string>
+    <string name="book">Book</string>
+    <string name="book_detail_title">Book Details</string>
+    <string name="book_entry_title">Add Book</string>
+    <string name="book_name_req">Book Name*</string>
+    <string name="book_price_req">Book Price*</string>
     <string name="no">No</string>
     <string name="price">Price</string>
     <string name="quantity_in_stock">Quantity in stock</string>
@@ -38,5 +38,5 @@
     <string name="description">Deskripsi</string>
     <string name="description_req">Deskripsi*</string>
     <string name="image_req">Image*</string>
-    <string name="no_item_found_description">Maaf, Buku Yang Anda Cari Belum Tersedia!</string>
+    <string name="no_book_found_description">Maaf, Buku Yang Anda Cari Belum Tersedia!</string>
 </resources>

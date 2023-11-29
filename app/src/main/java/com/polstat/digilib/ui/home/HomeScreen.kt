@@ -65,13 +65,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.polstat.digilib.InventoryTopAppBar
+import com.polstat.digilib.BookTopAppBar
 import com.polstat.digilib.R
 import com.polstat.digilib.data.AppDataContainer
-import com.polstat.digilib.data.Item
+import com.polstat.digilib.data.Book
 import com.polstat.digilib.ui.AppViewModelProvider
 import com.polstat.digilib.ui.navigation.NavigationDestination
-import com.polstat.digilib.ui.theme.InventoryTheme
+import com.polstat.digilib.ui.theme.BookTheme
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
@@ -85,8 +85,8 @@ object HomeDestination : NavigationDestination {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
-    navigateToItemEntry: () -> Unit,
-    navigateToItemUpdate: (Int) -> Unit,
+    navigateToBookEntry: () -> Unit,
+    navigateToBookUpdate: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -96,7 +96,7 @@ fun HomeScreen(
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            InventoryTopAppBar(
+            BookTopAppBar(
                 title = stringResource(HomeDestination.titleRes),
                 canNavigateBack = false,
                 scrollBehavior = scrollBehavior
@@ -104,20 +104,20 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = navigateToItemEntry,
+                onClick = navigateToBookEntry,
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.item_entry_title)
+                    contentDescription = stringResource(R.string.book_entry_title)
                 )
             }
         },
     ) { innerPadding ->
         HomeBody(
-            itemList = homeUiState.itemList,
-            onItemClick = navigateToItemUpdate,
+            bookList = homeUiState.bookList,
+            onBookClick = navigateToBookUpdate,
             modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
@@ -128,8 +128,8 @@ fun HomeScreen(
 
 @Composable
 private fun HomeBody(
-    itemList: List<Item>,
-    onItemClick: (Int) -> Unit,
+    bookList: List<Book>,
+    onBookClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel // Tambahkan parameter viewModel
 ) {
@@ -144,23 +144,23 @@ private fun HomeBody(
         val queryState = viewModel.query.collectAsState()
         val isQueryActive = queryState.value.text.isNotEmpty()
 
-        if (itemList.isEmpty() && isQueryActive) {
+        if (bookList.isEmpty() && isQueryActive) {
 
             Text(
-                text = stringResource(R.string.no_item_found_description),
+                text = stringResource(R.string.no_book_found_description),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge
             )
-        } else if (itemList.isEmpty()) {
+        } else if (bookList.isEmpty()) {
             Text(
-                text = stringResource(R.string.no_item_description),
+                text = stringResource(R.string.no_book_description),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge
             )
         } else {
-            InventoryList(
-                itemList = itemList,
-                onItemClick = { onItemClick(it.id) },
+            BookList(
+                bookList = bookList,
+                onBookClick = { onBookClick(it.id) },
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
             )
         }
@@ -201,22 +201,22 @@ fun SearchBar(viewModel: HomeViewModel, onSearch: (String) -> Unit) {
     )
 }
 @Composable
-private fun InventoryList(
-    itemList: List<Item>, onItemClick: (Item) -> Unit, modifier: Modifier = Modifier
+private fun BookList(
+    bookList: List<Book>, onBookClick: (Book) -> Unit, modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier) {
-        items(items = itemList, key = { it.id }) { item ->
-            InventoryItem(item = item,
+        items(items = bookList, key = { it.id }) { book ->
+            BookBook(book = book,
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small))
-                    .clickable { onItemClick(item) })
+                    .clickable { onBookClick(book) })
         }
     }
 }
 
 @Composable
-private fun InventoryItem(
-    item: Item, modifier: Modifier = Modifier
+private fun BookBook(
+    book: Book, modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier, elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -240,7 +240,7 @@ private fun InventoryItem(
                 .background(MaterialTheme.colorScheme.surface) // Add a background color
         ) {
             Text(
-                text = item.title,
+                text = book.title,
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 2,
@@ -248,7 +248,7 @@ private fun InventoryItem(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = item.description,
+                text = book.description,
                 color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 4,
@@ -262,11 +262,11 @@ private fun InventoryItem(
 @Preview(showBackground = true)
 @Composable
 fun HomeBodyPreview() {
-    InventoryTheme {
-        val viewModel = HomeViewModel(AppDataContainer(LocalContext.current).itemsRepository)
+    BookTheme {
+        val viewModel = HomeViewModel(AppDataContainer(LocalContext.current).booksRepository)
         HomeBody(listOf(
-            Item(1, "Game", "100.0", "20",4), Item(2, "Pen", "200.0", "30", quantity = 2), Item(3, "TV", "300.0", "50", quantity = 7)
-        ), onItemClick = {}, viewModel = viewModel
+            Book(1, "Game", "100.0", "20",4), Book(2, "Pen", "200.0", "30", quantity = 2), Book(3, "TV", "300.0", "50", quantity = 7)
+        ), onBookClick = {}, viewModel = viewModel
         )
     }
 }
@@ -274,9 +274,9 @@ fun HomeBodyPreview() {
 @Preview(showBackground = true)
 @Composable
 fun HomeBodyEmptyListPreview() {
-    InventoryTheme {
-        val viewModel = HomeViewModel(AppDataContainer(LocalContext.current).itemsRepository)
-        HomeBody(listOf(), onItemClick = {}, viewModel = viewModel
+    BookTheme {
+        val viewModel = HomeViewModel(AppDataContainer(LocalContext.current).booksRepository)
+        HomeBody(listOf(), onBookClick = {}, viewModel = viewModel
         )
     }
 }

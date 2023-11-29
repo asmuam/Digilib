@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.polstat.digilib.ui.item
+package com.polstat.digilib.ui.book
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.polstat.digilib.data.ItemsRepository
+import com.polstat.digilib.data.BooksRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -28,47 +28,47 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel to retrieve, update and delete an item from the [ItemsRepository]'s data source.
+ * ViewModel to retrieve, update and delete an book from the [BooksRepository]'s data source.
  */
-class ItemDetailsViewModel(
+class BookDetailsViewModel(
     savedStateHandle: SavedStateHandle,
-    private val itemsRepository: ItemsRepository,
+    private val booksRepository: BooksRepository,
 ) : ViewModel() {
 
-    private val itemId: Int = checkNotNull(savedStateHandle[ItemDetailsDestination.itemIdArg])
+    private val bookId: Int = checkNotNull(savedStateHandle[BookDetailsDestination.bookIdArg])
 
     /**
-     * Holds the item details ui state. The data is retrieved from [ItemsRepository] and mapped to
+     * Holds the book details ui state. The data is retrieved from [BooksRepository] and mapped to
      * the UI state.
      */
-    val uiState: StateFlow<ItemDetailsUiState> =
-        itemsRepository.getItemStream(itemId)
+    val uiState: StateFlow<BookDetailsUiState> =
+        booksRepository.getBookStream(bookId)
             .filterNotNull()
             .map {
-                ItemDetailsUiState(outOfStock = it.quantity <= 0, itemDetails = it.toItemDetails())
+                BookDetailsUiState(outOfStock = it.quantity <= 0, bookDetails = it.toBookDetails())
             }.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                initialValue = ItemDetailsUiState()
+                initialValue = BookDetailsUiState()
             )
 
     /**
-     * Reduces the item quantity by one and update the [ItemsRepository]'s data source.
+     * Reduces the book quantity by one and update the [BooksRepository]'s data source.
      */
     fun reduceQuantityByOne() {
         viewModelScope.launch {
-            val currentItem = uiState.value.itemDetails.toItem()
-            if (currentItem.quantity > 0) {
-                itemsRepository.updateItem(currentItem.copy(quantity = currentItem.quantity - 1))
+            val currentBook = uiState.value.bookDetails.toBook()
+            if (currentBook.quantity > 0) {
+                booksRepository.updateBook(currentBook.copy(quantity = currentBook.quantity - 1))
             }
         }
     }
 
     /**
-     * Deletes the item from the [ItemsRepository]'s data source.
+     * Deletes the book from the [BooksRepository]'s data source.
      */
-    suspend fun deleteItem() {
-        itemsRepository.deleteItem(uiState.value.itemDetails.toItem())
+    suspend fun deleteBook() {
+        booksRepository.deleteBook(uiState.value.bookDetails.toBook())
     }
 
     companion object {
@@ -77,9 +77,9 @@ class ItemDetailsViewModel(
 }
 
 /**
- * UI state for ItemDetailsScreen
+ * UI state for BookDetailsScreen
  */
-data class ItemDetailsUiState(
+data class BookDetailsUiState(
     val outOfStock: Boolean = true,
-    val itemDetails: ItemDetails = ItemDetails()
+    val bookDetails: BookDetails = BookDetails()
 )

@@ -31,15 +31,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.polstat.digilib.R.string
-import com.polstat.digilib.ui.navigation.InventoryNavHost
+import com.polstat.digilib.ui.navigation.BookNavHost
 
 /**
  * Top level composable that represents screens for the application.
  */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun InventoryApp(navController: NavHostController = rememberNavController()) {
-    InventoryNavHost(navController = navController)
+fun BookApp(navController: NavHostController = rememberNavController()) {
+    BookNavHost(navController = navController)
 }
 
 /**
@@ -47,7 +47,7 @@ fun InventoryApp(navController: NavHostController = rememberNavController()) {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InventoryTopAppBar(
+fun BookTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     modifier: Modifier = Modifier,

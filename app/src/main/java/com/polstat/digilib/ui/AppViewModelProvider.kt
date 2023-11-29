@@ -22,47 +22,47 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.polstat.digilib.InventoryApplication
+import com.polstat.digilib.BookApplication
 import com.polstat.digilib.ui.home.HomeViewModel
-import com.polstat.digilib.ui.item.ItemDetailsViewModel
-import com.polstat.digilib.ui.item.ItemEditViewModel
-import com.polstat.digilib.ui.item.ItemEntryViewModel
+import com.polstat.digilib.ui.book.BookDetailsViewModel
+import com.polstat.digilib.ui.book.BookEditViewModel
+import com.polstat.digilib.ui.book.BookEntryViewModel
 
 /**
- * Provides Factory to create instance of ViewModel for the entire Inventory app
+ * Provides Factory to create instance of ViewModel for the entire Book app
  */
 object AppViewModelProvider {
     val Factory = viewModelFactory {
-        // Initializer for ItemEditViewModel
+        // Initializer for BookEditViewModel
         initializer {
-            ItemEditViewModel(
+            BookEditViewModel(
                 this.createSavedStateHandle(),
-                inventoryApplication().container.itemsRepository
+                bookApplication().container.booksRepository
             )
         }
-        // Initializer for ItemEntryViewModel
+        // Initializer for BookEntryViewModel
         initializer {
-            ItemEntryViewModel(inventoryApplication().container.itemsRepository)
+            BookEntryViewModel(bookApplication().container.booksRepository)
         }
 
-        // Initializer for ItemDetailsViewModel
+        // Initializer for BookDetailsViewModel
         initializer {
-            ItemDetailsViewModel(
+            BookDetailsViewModel(
                 this.createSavedStateHandle(),
-                inventoryApplication().container.itemsRepository
+                bookApplication().container.booksRepository
             )
         }
 
         // Initializer for HomeViewModel
         initializer {
-            HomeViewModel(inventoryApplication().container.itemsRepository)
+            HomeViewModel(bookApplication().container.booksRepository)
         }
     }
 }
 
 /**
  * Extension function to queries for [Application] object and returns an instance of
- * [InventoryApplication].
+ * [BookApplication].
  */
-fun CreationExtras.inventoryApplication(): InventoryApplication =
-    (this[AndroidViewModelFactory.APPLICATION_KEY] as InventoryApplication)
+fun CreationExtras.bookApplication(): BookApplication =
+    (this[AndroidViewModelFactory.APPLICATION_KEY] as BookApplication)

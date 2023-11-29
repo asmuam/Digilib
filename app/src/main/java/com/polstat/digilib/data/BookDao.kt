@@ -25,25 +25,25 @@ import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Database access object to access the Inventory database
+ * Database access object to access the Book database
  */
 @Dao
-interface ItemDao {
+interface BookDao {
 
-    @Query("SELECT * from items ORDER BY title ASC")
-    fun getAllItems(): Flow<List<Item>>
+    @Query("SELECT * from books ORDER BY title ASC")
+    fun getAllBooks(): Flow<List<Book>>
 
-    @Query("SELECT * from items WHERE id = :id")
-    fun getItem(id: Int): Flow<Item>
+    @Query("SELECT * from books WHERE id = :id")
+    fun getBook(id: Int): Flow<Book>
 
     // Specify the conflict strategy as IGNORE, when the user tries to add an
-    // existing Item into the database Room ignores the conflict.
+    // existing Book into the database Room ignores the conflict.
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(item: Item)
+    suspend fun insert(book: Book)
 
     @Update
-    suspend fun update(item: Item)
+    suspend fun update(book: Book)
 
     @Delete
-    suspend fun delete(item: Item)
+    suspend fun delete(book: Book)
 }

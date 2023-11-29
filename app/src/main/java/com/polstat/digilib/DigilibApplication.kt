@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package com.polstat.digilib.data
+package com.polstat.digilib
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import android.app.Application
+import com.polstat.digilib.data.AppContainer
+import com.polstat.digilib.data.AppDataContainer
 
-/**
- * Entity data class represents a single row in the database.
- */
-@Entity(tableName = "items")
-data class Item(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val title: String,
-    val description: String,
-    val image: String,
-    val quantity: Int
-)
+class BookApplication : Application() {
+
+    /**
+     * AppContainer instance used by the rest of classes to obtain dependencies
+     */
+    lateinit var container: AppContainer
+
+    override fun onCreate() {
+        super.onCreate()
+        container = AppDataContainer(this)
+    }
+}

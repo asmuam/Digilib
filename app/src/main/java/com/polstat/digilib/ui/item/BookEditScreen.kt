@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.polstat.digilib.ui.item
+package com.polstat.digilib.ui.book
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,49 +25,49 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.polstat.digilib.InventoryTopAppBar
+import com.polstat.digilib.BookTopAppBar
 import com.polstat.digilib.R
 import com.polstat.digilib.ui.AppViewModelProvider
 import com.polstat.digilib.ui.navigation.NavigationDestination
-import com.polstat.digilib.ui.theme.InventoryTheme
+import com.polstat.digilib.ui.theme.BookTheme
 import kotlinx.coroutines.launch
 
-object ItemEditDestination : NavigationDestination {
-    override val route = "item_edit"
-    override val titleRes = R.string.edit_item_title
-    const val itemIdArg = "itemId"
-    val routeWithArgs = "$route/{$itemIdArg}"
+object BookEditDestination : NavigationDestination {
+    override val route = "book_edit"
+    override val titleRes = R.string.edit_book_title
+    const val bookIdArg = "bookId"
+    val routeWithArgs = "$route/{$bookIdArg}"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemEditScreen(
+fun BookEditScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ItemEditViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: BookEditViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
         topBar = {
-            InventoryTopAppBar(
-                title = stringResource(ItemEditDestination.titleRes),
+            BookTopAppBar(
+                title = stringResource(BookEditDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = onNavigateUp
             )
         },
         modifier = modifier
     ) { innerPadding ->
-        ItemEntryBody(
-            itemUiState = viewModel.itemUiState,
-            onItemValueChange = viewModel::updateUiState,
+        BookEntryBody(
+            bookUiState = viewModel.bookUiState,
+            onBookValueChange = viewModel::updateUiState,
             onSaveClick = {
                 // Note: If the user rotates the screen very fast, the operation may get cancelled
-                // and the item may not be updated in the Database. This is because when config
+                // and the book may not be updated in the Database. This is because when config
                 // change occurs, the Activity will be recreated and the rememberCoroutineScope will
                 // be cancelled - since the scope is bound to composition.
                 coroutineScope.launch {
-                    viewModel.updateItem()
+                    viewModel.updateBook()
                     navigateBack()
                 }
             },
@@ -78,8 +78,8 @@ fun ItemEditScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun ItemEditScreenPreview() {
-    InventoryTheme {
-        ItemEditScreen(navigateBack = { /*Do nothing*/ }, onNavigateUp = { /*Do nothing*/ })
+fun BookEditScreenPreview() {
+    BookTheme {
+        BookEditScreen(navigateBack = { /*Do nothing*/ }, onNavigateUp = { /*Do nothing*/ })
     }
 }

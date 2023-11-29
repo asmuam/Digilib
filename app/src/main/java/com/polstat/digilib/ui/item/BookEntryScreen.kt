@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.polstat.digilib.ui.item
+package com.polstat.digilib.ui.book
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,48 +38,48 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.polstat.digilib.InventoryTopAppBar
+import com.polstat.digilib.BookTopAppBar
 import com.polstat.digilib.R
 import com.polstat.digilib.ui.AppViewModelProvider
 import com.polstat.digilib.ui.navigation.NavigationDestination
-import com.polstat.digilib.ui.theme.InventoryTheme
+import com.polstat.digilib.ui.theme.BookTheme
 import kotlinx.coroutines.launch
 import java.util.Currency
 import java.util.Locale
 
-object ItemEntryDestination : NavigationDestination {
-    override val route = "item_entry"
-    override val titleRes = R.string.item_entry_title
+object BookEntryDestination : NavigationDestination {
+    override val route = "book_entry"
+    override val titleRes = R.string.book_entry_title
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemEntryScreen(
+fun BookEntryScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
     canNavigateBack: Boolean = true,
-    viewModel: ItemEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: BookEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
         topBar = {
-            InventoryTopAppBar(
-                title = stringResource(ItemEntryDestination.titleRes),
+            BookTopAppBar(
+                title = stringResource(BookEntryDestination.titleRes),
                 canNavigateBack = canNavigateBack,
                 navigateUp = onNavigateUp
             )
         }
     ) { innerPadding ->
-        ItemEntryBody(
-            itemUiState = viewModel.itemUiState,
-            onItemValueChange = viewModel::updateUiState,
+        BookEntryBody(
+            bookUiState = viewModel.bookUiState,
+            onBookValueChange = viewModel::updateUiState,
             onSaveClick = {
                 // Note: If the user rotates the screen very fast, the operation may get cancelled
-                // and the item may not be saved in the Database. This is because when config
+                // and the book may not be saved in the Database. This is because when config
                 // change occurs, the Activity will be recreated and the rememberCoroutineScope will
                 // be cancelled - since the scope is bound to composition.
                 coroutineScope.launch {
-                    viewModel.saveItem()
+                    viewModel.saveBook()
                     navigateBack()
                 }
             },
@@ -92,9 +92,9 @@ fun ItemEntryScreen(
 }
 
 @Composable
-fun ItemEntryBody(
-    itemUiState: ItemUiState,
-    onItemValueChange: (ItemDetails) -> Unit,
+fun BookEntryBody(
+    bookUiState: BookUiState,
+    onBookValueChange: (BookDetails) -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -102,14 +102,14 @@ fun ItemEntryBody(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_large))
     ) {
-        ItemInputForm(
-            itemDetails = itemUiState.itemDetails,
-            onValueChange = onItemValueChange,
+        BookInputForm(
+            bookDetails = bookUiState.bookDetails,
+            onValueChange = onBookValueChange,
             modifier = Modifier.fillMaxWidth()
         )
         Button(
             onClick = onSaveClick,
-            enabled = itemUiState.isEntryValid,
+            enabled = bookUiState.isEntryValid,
             shape = MaterialTheme.shapes.small,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -120,10 +120,10 @@ fun ItemEntryBody(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemInputForm(
-    itemDetails: ItemDetails,
+fun BookInputForm(
+    bookDetails: BookDetails,
     modifier: Modifier = Modifier,
-    onValueChange: (ItemDetails) -> Unit = {},
+    onValueChange: (BookDetails) -> Unit = {},
     enabled: Boolean = true
 ) {
     Column(
@@ -131,9 +131,9 @@ fun ItemInputForm(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
     ) {
         OutlinedTextField(
-            value = itemDetails.title,
-            onValueChange = { onValueChange(itemDetails.copy(title = it)) },
-            label = { Text(stringResource(R.string.item_name_req)) },
+            value = bookDetails.title,
+            onValueChange = { onValueChange(bookDetails.copy(title = it)) },
+            label = { Text(stringResource(R.string.book_name_req)) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -144,8 +144,8 @@ fun ItemInputForm(
             singleLine = true
         )
         OutlinedTextField(
-            value = itemDetails.description,
-            onValueChange = { onValueChange(itemDetails.copy(description = it)) },
+            value = bookDetails.description,
+            onValueChange = { onValueChange(bookDetails.copy(description = it)) },
             label = { Text(stringResource(R.string.description_req)) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -158,8 +158,8 @@ fun ItemInputForm(
             singleLine = true
         )
         OutlinedTextField(
-            value = itemDetails.quantity,
-            onValueChange = { onValueChange(itemDetails.copy(quantity = it)) },
+            value = bookDetails.quantity,
+            onValueChange = { onValueChange(bookDetails.copy(quantity = it)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             label = { Text(stringResource(R.string.quantity_req)) },
             colors = OutlinedTextFieldDefaults.colors(
@@ -172,8 +172,8 @@ fun ItemInputForm(
             singleLine = true
         )
         OutlinedTextField(
-            value = itemDetails.image,
-            onValueChange = { onValueChange(itemDetails.copy(image = it)) },
+            value = bookDetails.image,
+            onValueChange = { onValueChange(bookDetails.copy(image = it)) },
             label = { Text(stringResource(R.string.image_req)) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -195,12 +195,12 @@ fun ItemInputForm(
 
 @Preview(showBackground = true)
 @Composable
-private fun ItemEntryScreenPreview() {
-    InventoryTheme {
-        ItemEntryBody(itemUiState = ItemUiState(
-            ItemDetails(
-                title = "Item name", description = "10.00", quantity = "5"
+private fun BookEntryScreenPreview() {
+    BookTheme {
+        BookEntryBody(bookUiState = BookUiState(
+            BookDetails(
+                title = "Book name", description = "10.00", quantity = "5"
             )
-        ), onItemValueChange = {}, onSaveClick = {})
+        ), onBookValueChange = {}, onSaveClick = {})
     }
 }
