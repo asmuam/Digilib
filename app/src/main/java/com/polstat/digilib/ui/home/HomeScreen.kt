@@ -206,7 +206,7 @@ private fun BookList(
 ) {
     LazyColumn(modifier = modifier) {
         items(items = bookList, key = { it.id }) { book ->
-            BookBook(book = book,
+            BookItem(book = book,
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small))
                     .clickable { onBookClick(book) })
@@ -215,7 +215,7 @@ private fun BookList(
 }
 
 @Composable
-private fun BookBook(
+private fun BookItem(
     book: Book, modifier: Modifier = Modifier
 ) {
     Card(
